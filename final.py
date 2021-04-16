@@ -6,7 +6,7 @@ NetID(s):
 """
 
 import matplotlib.pyplot as plt
-
+import random
 
 """
 
@@ -59,12 +59,37 @@ def pop(x0, y0, dt, time):
 
 """
 
+List of Initial Populations
+
+"""
+def init_pops(numPoints):
+
+	init_pops= []
+	# step = 5/numPoints
+
+	# for i in range(numPoints):
+		
+	# 	x = i*step
+	# 	y = 5 - i*step
+	# 	init_pops.append((x,y))
+
+	# return(init_pops)
+
+	for i in range(numPoints):
+		x = random.random()*5
+		y = random.random()*5
+		init_pops.append((x,y))
+
+	return(init_pops)
+
+"""
+
 Plotting population changes
 
 """
 
-x1, y1 = pop(5, 3, 0.01, 1000)
-x2, y2 = pop(0.5, 0.5, 0.01, 1000)
+x1, y1 = pop(0, 4, 0.01, 1000)
+x2, y2 = pop(4, 0, 0.01, 1000)
 timelist = [0.01*i for i in range(1000)]
 
 fig = plt.figure(figsize=(15,5))
@@ -76,6 +101,17 @@ ax1.plot(timelist, x1, 'r-', label='predator')
 ax1.plot(timelist, y1, 'b-', label='prey')
 ax1.plot(timelist, x2, label = "predator 2")
 ax1.plot(timelist, y2, label = "prey 2")
+
+init_pops = init_pops(20)
+
+for i in range(len(init_pops)):
+	a, b = init_pops[i]
+	x, y = pop(a, b, 0.01, 1000)
+	ax1.plot(timelist, x)
+	ax1.plot(timelist, y)
+
+	ax2.plot(x, y)
+
 ax1.set_title("Dynamics in time")
 ax1.set_xlabel("time")
 ax1.grid()
