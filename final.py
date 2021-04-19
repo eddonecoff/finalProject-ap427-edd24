@@ -61,6 +61,14 @@ def fy2(x,y):
 	fy1 = (1-x-y)*y
 	return fy1
 
+def fx3(x,y):
+	fx1 = 0.2*x+y
+	return fx1
+
+def fy3(x,y):
+	fy1 = 0.2*y-x
+	return fy1
+
 """
 
 Modeling population changes
@@ -76,24 +84,27 @@ def pop(x0, y0, dt, time):
 	y.append(y0)
 
 	# Calculate populations at each timestep
-	for i in range(time - 1):
-		x.append(x[i] + (fx(x[i],y[i])) * dt)
-		y.append(y[i] + (fy(x[i],y[i])) * dt)
+	for i in range(-time, time):
+		x.append(x[i+time] + (fx3(x[i+time],y[i+time])) * dt)
+		y.append(y[i+time] + (fy3(x[i+time],y[i+time])) * dt)
 
 	return(x,y)
+
+# p1, p2 = pop(-0.5, -0.5, 0.1, 10)
+# print(len(p1))
 
 """
 
 List of Initial Populations
 
 """
-def init_pops(numPoints):
+def init_pops(numPoints, xRange, yRange):
 
 	init_pops= []
 
 	for i in range(numPoints):
-		x = random.random()*5
-		y = random.random()*5
+		x = random.random()*xRange
+		y = random.random()*yRange
 		init_pops.append((x,y))
 
 	return(init_pops)
@@ -118,7 +129,8 @@ Plotting population changes
 # ax1.plot(timelist, x2, label = "predator 2")
 # ax1.plot(timelist, y2, label = "prey 2")
 
-init_pops = init_pops(100)
+init_pops1 = init_pops(100,5,5)
+init_pops2 = init_pops(100,0.5,0.5)
 
 # for i in range(len(init_pops)):
 # 	a, b = init_pops[i]
@@ -176,6 +188,9 @@ def fxy1(x,y):
 
 def fxy2(x,y):
 	return np.array([[fx2(x,y)], [fy2(x,y)]])
+
+def fxy3(x,y):
+	return np.array([[fx3(x,y)], [fy3(x,y)]])
 
 # RK4 simulation of competitive species system
 def rk4(N,a,b,dt):
@@ -236,6 +251,25 @@ def rk4_2(N,a,b,dt):
          
    return t, xn
 
+def rk4_3(N,a,b,dt):
+   x0 = np.array([[a],[b]])
+   xn = np.zeros((2,N+1))
+   xn[:,0,None] = x0
+   t = [dt*n for n in range(N+1)]
+   
+   for n in range(N):
+      tn = t[n]
+      a = xn[0][n]
+      b = xn[1][n]
+      k1 = dt*fxy3(a,b)
+      k2 = dt*fxy3(a+(k1[0][0])/2, b+(k1[1][0])/2)
+      k3 = dt*fxy3(a+(k2[0][0])/2, b+(k2[1][0])/2)
+      k4 = dt*fxy3(a+(k3[0][0]), b+(k3[1][0]))
+
+      xn[:,n+1,None] = xn[:,n,None] + 1/6*k1 + 1/3*k2 + 1/3*k3 + 1/6*k4
+         
+   return t, xn
+
 # Example function
 
 # Phase-Plane Portrait
@@ -246,8 +280,8 @@ plt.xlabel("Prey Population")
 plt.ylabel("Predator Population")
 
 # Draw portrait for 20 random initial pops using RK4
-for i in range(len(init_pops)):
-	a, b = init_pops[i]
+for i in range(len(init_pops1)):
+	a, b = init_pops1[i]
 	t, xn = rk4(1000, a, b, 0.01)
 	ax.plot(xn[0], xn[1])
 
@@ -278,8 +312,8 @@ plt.xlabel("Prey Population")
 plt.ylabel("Predator Population")
 
 # Draw portrait for 20 random initial pops using RK4
-for i in range(len(init_pops)):
-	a1, b1 = init_pops[i]
+for i in range(len(init_pops2)):
+	a1, b1 = init_pops2[i]
 	t1, xn1 = rk4_1(1000, a1, b1, 0.01)
 	ax.plot(xn1[0], xn1[1])
 
@@ -309,8 +343,8 @@ plt.xlabel("Prey Population")
 plt.ylabel("Predator Population")
 
 # Draw portrait for 20 random initial pops using RK4
-for i in range(len(init_pops)):
-	a2, b2 = init_pops[i]
+for i in range(len(init_pops1)):
+	a2, b2 = init_pops1[i]
 	t2, xn2 = rk4_2(1000, a2, b2, 0.01)
 	ax.plot(xn2[0], xn2[1])
 
@@ -328,4 +362,35 @@ plt.title("Species Population over Time")
 plt.xlabel("Time")
 plt.ylabel("Population")
 plt.savefig("rk4_2pop.png", bbox_inches = "tight")
+plt.close("all")
+
+# fxy3: experimental
+
+# Phase-Plane Portrait
+plt.figure()
+fig, ax = plt.subplots()
+plt.title("Phase-Plane Portrait Using RK4")
+plt.xlabel("Prey Population")
+plt.ylabel("Predator Population")
+
+# Draw portrait for 20 random initial pops using RK4
+for i in range(len(init_pops1)):
+	a3, b3 = init_pops1[i]
+	t3, xn3 = rk4_3(1000, a3, b3, 0.01)
+	ax.plot(xn3[0], xn3[1])
+
+plt.savefig("rk4_3ppp.png", bbox_inches = "tight")
+plt.close("all")
+
+# Example population plot with initial (5,3)
+t3, xn3 = rk4_3(1500, 5, 3, 0.01)
+plt.figure()
+fig, ax = plt.subplots()
+ax.plot(t3, xn3[0], label = "Predator Population")
+ax.plot(t3, xn3[1], label = "Prey Population")
+ax.legend(loc = "upper right")
+plt.title("Species Population over Time")
+plt.xlabel("Time")
+plt.ylabel("Population")
+plt.savefig("rk4_3pop.png", bbox_inches = "tight")
 plt.close("all")
