@@ -132,23 +132,27 @@ init_pops2 = init_pops(100,0.5,0.5)
 find_eqpts
 
 This function finds the equilibrium points (location where fx = fy = 0)
-for a system of ODEs
+for a system of ODEs by checking all (x,y) in range [0,r], 
+incrementing by 0.01.
+
 
 INPUTS:
+xfunc: function for x'
+yfunc: function for y'
 r: range of (x,y) values that will be checked
 
 OUTPUTS:
-fp: list of equilibrium points
+ep: list of equilibrium points
 
 """
-fp = []
+ep = []
 
-def find_eqpts(r):
-   for x in range(r):
-       for y in range(r):
-           if ((fx1(x,y) == 0) and (fy1(x,y) == 0)):
-               ep.append((x,y))
-               print('The system has an equilibrium point at %s,%s' % (x,y))
+def find_eqpts(xfunc, yfunc, r):
+   for x in range(100*r):
+       for y in range(100*r):
+           if ((xfunc(0.01*x,0.01*y) == 0) and (yfunc(0.01*x,0.01*y) == 0)):
+               ep.append((0.01*x,0.01*y))
+               print('The system has an equilibrium point at (%s,%s)' % (0.01*x,0.01*y))
    return ep
 
 
@@ -171,6 +175,7 @@ RK4
 This function uses RK4 to approximate x(t) and y(t).
 
 INPUTS:
+func: Vector function (np.array) that will be simulated
 N: Number of subintervals
 a: Initial x population x(0)
 b: initial y population y(0)
@@ -204,6 +209,11 @@ def rk4(func,N,a,b,dt):
 main function
 """
 if __name__ == '__main__':
+
+	find_eqpts(fx, fy, 5)
+	find_eqpts(fx1, fy1, 5)
+	find_eqpts(fx2, fy2, 5)
+	find_eqpts(fx3, fy3, 5)
 
 	# fx, fy
 
