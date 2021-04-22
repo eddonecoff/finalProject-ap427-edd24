@@ -181,7 +181,7 @@ t: List of times
 xn: List of (x,y) population at each time
 """
 
-def rk4(N,a,b,dt):
+def rk4(func,N,a,b,dt):
    x0 = np.array([[a],[b]])
    xn = np.zeros((2,N+1))
    xn[:,0,None] = x0
@@ -191,73 +191,14 @@ def rk4(N,a,b,dt):
       tn = t[n]
       a = xn[0][n]
       b = xn[1][n]
-      k1 = dt*fxy(a,b)
-      k2 = dt*fxy(a+(k1[0][0])/2, b+(k1[1][0])/2)
-      k3 = dt*fxy(a+(k2[0][0])/2, b+(k2[1][0])/2)
-      k4 = dt*fxy(a+(k3[0][0]), b+(k3[1][0]))
+      k1 = dt*func(a,b)
+      k2 = dt*func(a+(k1[0][0])/2, b+(k1[1][0])/2)
+      k3 = dt*func(a+(k2[0][0])/2, b+(k2[1][0])/2)
+      k4 = dt*func(a+(k3[0][0]), b+(k3[1][0]))
 
       xn[:,n+1,None] = xn[:,n,None] + 1/6*k1 + 1/3*k2 + 1/3*k3 + 1/6*k4
          
    return t, xn
-
-def rk4_1(N,a,b,dt):
-   x0 = np.array([[a],[b]])
-   xn = np.zeros((2,N+1))
-   xn[:,0,None] = x0
-   t = [dt*n for n in range(N+1)]
-   
-   for n in range(N):
-      tn = t[n]
-      a = xn[0][n]
-      b = xn[1][n]
-      k1 = dt*fxy1(a,b)
-      k2 = dt*fxy1(a+(k1[0][0])/2, b+(k1[1][0])/2)
-      k3 = dt*fxy1(a+(k2[0][0])/2, b+(k2[1][0])/2)
-      k4 = dt*fxy1(a+(k3[0][0]), b+(k3[1][0]))
-
-      xn[:,n+1,None] = xn[:,n,None] + 1/6*k1 + 1/3*k2 + 1/3*k3 + 1/6*k4
-         
-   return t, xn
-
-
-def rk4_2(N,a,b,dt):
-   x0 = np.array([[a],[b]])
-   xn = np.zeros((2,N+1))
-   xn[:,0,None] = x0
-   t = [dt*n for n in range(N+1)]
-   
-   for n in range(N):
-      tn = t[n]
-      a = xn[0][n]
-      b = xn[1][n]
-      k1 = dt*fxy2(a,b)
-      k2 = dt*fxy2(a+(k1[0][0])/2, b+(k1[1][0])/2)
-      k3 = dt*fxy2(a+(k2[0][0])/2, b+(k2[1][0])/2)
-      k4 = dt*fxy2(a+(k3[0][0]), b+(k3[1][0]))
-
-      xn[:,n+1,None] = xn[:,n,None] + 1/6*k1 + 1/3*k2 + 1/3*k3 + 1/6*k4
-         
-   return t, xn
-
-def rk4_3(N,a,b,dt):
-   x0 = np.array([[a],[b]])
-   xn = np.zeros((2,N+1))
-   xn[:,0,None] = x0
-   t = [dt*n for n in range(N+1)]
-   
-   for n in range(N):
-      tn = t[n]
-      a = xn[0][n]
-      b = xn[1][n]
-      k1 = dt*fxy3(a,b)
-      k2 = dt*fxy3(a+(k1[0][0])/2, b+(k1[1][0])/2)
-      k3 = dt*fxy3(a+(k2[0][0])/2, b+(k2[1][0])/2)
-      k4 = dt*fxy3(a+(k3[0][0]), b+(k3[1][0]))
-
-      xn[:,n+1,None] = xn[:,n,None] + 1/6*k1 + 1/3*k2 + 1/3*k3 + 1/6*k4
-         
-   return t, xn
-
 
 """
 main function
@@ -276,14 +217,14 @@ if __name__ == '__main__':
 	# Draw portrait for 20 random initial pops using RK4
 	for i in range(len(init_pops1)):
 		a, b = init_pops1[i]
-		t, xn = rk4(1000, a, b, 0.01)
+		t, xn = rk4(fxy, 1000, a, b, 0.01)
 		ax.plot(xn[0], xn[1])
 
 	plt.savefig("rk4_0ppp.png", bbox_inches = "tight")
 	plt.close("all")
 
 	# Example population plot with initial (5,3)
-	t, xn = rk4(1000, 5, 3, 0.01)
+	t, xn = rk4(fxy, 1000, 5, 3, 0.01)
 	plt.figure()
 	fig, ax = plt.subplots()
 	ax.plot(t, xn[0], label = "Prey Population")
@@ -308,14 +249,14 @@ if __name__ == '__main__':
 	# Draw portrait for 20 random initial pops using RK4
 	for i in range(len(init_pops2)):
 		a1, b1 = init_pops2[i]
-		t1, xn1 = rk4_1(1000, a1, b1, 0.01)
+		t1, xn1 = rk4(fxy1, 1000, a1, b1, 0.01)
 		ax.plot(xn1[0], xn1[1])
 
 	plt.savefig("rk4_1ppp.png", bbox_inches = "tight")
 	plt.close("all")
 
 	# Example population plot with initial (5,3)
-	t1, xn1 = rk4_1(1000, 5, 3, 0.01)
+	t1, xn1 = rk4(fxy1, 1000, 5, 3, 0.01)
 	plt.figure()
 	fig, ax = plt.subplots()
 	ax.plot(t1, xn1[0], label = "Prey Population")
@@ -339,14 +280,14 @@ if __name__ == '__main__':
 	# Draw portrait for 20 random initial pops using RK4
 	for i in range(len(init_pops1)):
 		a2, b2 = init_pops1[i]
-		t2, xn2 = rk4_2(1000, a2, b2, 0.01)
+		t2, xn2 = rk4(fxy2, 1000, a2, b2, 0.01)
 		ax.plot(xn2[0], xn2[1])
 
 	plt.savefig("rk4_2ppp.png", bbox_inches = "tight")
 	plt.close("all")
 
 	# Example population plot with initial (5,3)
-	t2, xn2 = rk4_2(1000, 5, 3, 0.01)
+	t2, xn2 = rk4(fxy2, 1000, 5, 3, 0.01)
 	plt.figure()
 	fig, ax = plt.subplots()
 	ax.plot(t2, xn2[0], label = "Prey Population")
@@ -370,14 +311,14 @@ if __name__ == '__main__':
 	# Draw portrait for 20 random initial pops using RK4
 	for i in range(len(init_pops1)):
 		a3, b3 = init_pops1[i]
-		t3, xn3 = rk4_3(1000, a3, b3, 0.01)
+		t3, xn3 = rk4(fxy3, 1000, a3, b3, 0.01)
 		ax.plot(xn3[0], xn3[1])
 
 	plt.savefig("rk4_3ppp.png", bbox_inches = "tight")
 	plt.close("all")
 
 	# Example population plot with initial (5,3)
-	t3, xn3 = rk4_3(1500, 5, 3, 0.01)
+	t3, xn3 = rk4(fxy3, 1500, 5, 3, 0.01)
 	plt.figure()
 	fig, ax = plt.subplots()
 	ax.plot(t3, xn3[0], label = "Predator Population")
