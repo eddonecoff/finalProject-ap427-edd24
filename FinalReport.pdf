@@ -1,0 +1,241 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[margin = 1in]{geometry}
+\graphicspath{{./Images/}}
+%opening
+\title{Analysis of Competitive Species Systems of Nonlinear ODEs}
+\author{Ethan Donecoff, Arvind Parthasarathy}
+
+\begin{document}
+
+\maketitle
+\section*{Introduction}
+
+Starting with the generic system, we picked various sets of coefficients to demonstrate different long-term behavior for the competitive species model. To analyze each system, we used RK4 to simulate the population of each species given initial conditions. For each system, we generated a graph of Population vs. Time and a Phase-Plane Portrait (predator population vs. prey population). We then compared these numerical simulations to theoretical calculations of the long-term behavior of each system.
+
+\section{Spiral Sink}
+\subsection{Model Overview}
+$$\begin{cases}
+	x'=2x-x^2-xy \\
+	y'=-y +xy
+\end{cases}$$
+
+In this model, the growth rate of the prey is modeled by $x'$ in the above system. The growth rate is positive for low population values, but becomes negative as the population grows. The effect of the predator is modeled by the negative interaction term. As the population of the predator ($y$) grows, the prey growth rate decreases. As seen in figure 1 below, in the long run the prey population will stabilize to 1.
+
+The growth rate of the predator is modeled by $y'$ in the above system. When the prey population is larger than 1, the predator growth rate is positive. When the prey population is less than 1, the predator growth rate is negative. As seen in figure 1, in the long run the predator population will stabilize to 1.
+
+\subsection{Population vs. Time}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{rk4_0pop}
+	\caption{Population vs. Time}
+\end{figure}
+
+\subsection{Theoretical Long-Term Behavior}
+
+To analyze the long-term stability of the system, we first find the equilibrium points / steady states where both population's have 0 growth rate. 
+
+$x' = x(2-x-y)$
+
+This rate of change is 0 at $x=0$ or $y = 2-x$
+
+$y' = y(x-1)$ 
+
+This rate of change is 0 at $y=0$ or $x=1$
+
+Combining our restrictions, we obtain equilibrium points at $(0,0)$, $(1,1)$, and $(2,0)$. 
+
+To determine the stability of each equilibrium point, we calculate the jacobian. 
+
+$$\begin{bmatrix}
+	2-2x-y & -x\\
+	y & x-1 
+\end{bmatrix}$$
+
+At (0,0), the jacobian is 
+$$\begin{bmatrix}
+	2 & 0\\
+	0 & -1 
+\end{bmatrix}$$
+which has eigenvalues $\lambda = -1,2$, thus this point is a saddle point and is unstable. 
+
+At (1,1) the jacobian is 
+$$\begin{bmatrix}
+	-1 & -1\\
+	1 & 0 
+\end{bmatrix}$$
+which has eigenvalues $\lambda = -\frac{1}{2}\pm i\frac{\sqrt{3}}{2}$. Because the eigenvalues are complex and have negative real components, this point is a spiral sink and is stable.
+
+At (2,0) the Jacobian is 
+$$\begin{bmatrix}
+	-2 & -2\\
+	0 & 1 
+\end{bmatrix}$$
+which has eigenvalues $\lambda = 1, 2$ Because the eigenvalues are both real and positive, this point is a nodal source and is unstable. 
+
+\subsection{Numerical Results}
+
+As shown in Figure 2 below, every solution spirals inward to the point $(1,1)$ over a long period of time. Because the other equilibrium points are unstable, the saddle point and nodal source are difficult to see on this phase-plane portrait. As a result, all solutions appear to converge to $(1,1)$, which matches our theoretical results. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{rk4_0ppp}
+	\caption{Phase-Plane Portrait}
+\end{figure}
+
+\section{Nodal Source}
+\subsection{Model Overview}
+
+$$\begin{cases}
+	x'=(1-x-y)x \\
+	y'=(\frac{3}{4}-y-\frac{1}{2}x)y
+\end{cases}$$
+
+For this model, both species have positive growth rates at low populations. Growth rate decreases as both populations get bigger. This could reflect a pair of species competing for the same limited resources. For large initial conditions, we expect the population of both species to decline over time. 
+
+\subsection{Population vs. Time}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{rk4_1pop}
+	\caption{Population vs. Time}
+\end{figure}
+
+\subsection{Theoretical Long-Term Behavior}
+
+To analyze the long-term stability of the system, we first find the equilibrium points / steady states where both population's have 0 growth rate. 
+
+$x'=(1-x-y)x$
+
+This growth rate is 0 at $x=0$ or $y=1-x$.
+
+$y'=(\frac{3}{4}-y-\frac{1}{2}x)y$
+
+This growth rate is 0 at $y=0$ or $y = \frac{3}{4}-\frac{1}{2}x$
+
+Combining these restrictions, we find equilibrium points at $(0,0)$, $(0, \frac{3}{4}), (1,0), (\frac{1}{2}, \frac{1}{2})$
+
+The jacobian is 
+$$\begin{bmatrix}
+	1-2x-y & -x \\
+	-\frac{1}{2}y & \frac{3}{4}-2y-\frac{1}{2}x
+\end{bmatrix}$$
+
+At $(0,0)$, the jacobian is 
+$$\begin{bmatrix}
+	1 & 0\\
+	0 & \frac{3}{4} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda=\frac{3}{4}, 1$. Since both eigenvalues are real and positive, this point is a nodal source and is unstable. 
+
+At $(0,\frac{3}{4})$, the jacobian is 
+$$\begin{bmatrix}
+	\frac{1}{4} & 0\\
+	-\frac{3}{8} & -\frac{3}{4} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda=-\frac{3}{4}, \frac{1}{4}$. Here both eigenvalues are real with opposite signs. Therefore, this point is a saddle point which is unstable. 
+
+At $(1,0)$, the jacobian is 
+$$\begin{bmatrix}
+	-1 & -1\\
+	0 & \frac{1}{4} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda=-1, \frac{1}{4}$. Again, both eigenvalues are real with opposite signs, so this point is a saddle point which is unstable.
+
+At $(\frac{1}{2},\frac{1}{2})$, the jacobian is 
+$$\begin{bmatrix}
+	-\frac{1}{2} & -\frac{1}{2} \\
+	-\frac{1}{4} & -\frac{1}{2} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda = -\frac{1}{2}\pm \frac{1}{2\sqrt{2}}$. Since both eigenvalues are real and negative, this point is a nodal sink and is stable. 
+
+\subsection{Numerical Results}
+
+Here, we chose to focus on solutions with initial conditions in
+the region $[0,\frac{1}{2}]\times [0,\frac{1}{2}]$ in order to highlight the effect of the nodal source at $(0,0)$ and the nodal sink at $(\frac{1}{2}, \frac{1}{2})$. As shown in Figure 4 below, initial conditions near $(0,0)$ move outwards. Populations move towards either saddle point at $(0, \frac{3}{4})$ or $(1,0)$. After a long time, all solutions tend toward the nodal sink at $(\frac{1}{2}, \frac{1}{2})$. Again, this matches our theoretical results. 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{rk4_1ppp}
+	\caption{Phase-Plane Portrait}
+\end{figure}
+
+\section{Saddle Point \& Nodal Sink}
+
+$$\begin{cases}
+	x'=(6-2x-3y)x \\
+	y'=(1-x-y)y
+\end{cases}$$
+
+Similar to the Nodal Source model, this system may represent two species that are competing for limited resources. Thus, both species have positive growth rates and low populations and the growth rate declines as population increases.
+
+\subsection{Population vs. Time}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{rk4_2pop}
+	\caption{Population vs. Time}
+\end{figure}
+
+\subsection{Theoretical Long-Term Behavior}
+
+To analyze the long-term stability of the system, we first find the equilibrium points / steady states where both population's have 0 growth rate. 
+
+$x'=(6-2x-3y)x$
+
+This growth rate is 0 at $x=0$ or $y=-\frac{2}{3}x+2$.
+
+$y'=(1-x-y)y$
+
+This growth rate is 0 at $y=0$ or $y = -x+1$
+
+Combining these restrictions, we find equilibrium points at $(0,0)$, $(0, \frac{3}{4}), (1,0), (\frac{1}{2}, \frac{1}{2})$
+
+The jacobian is 
+$$\begin{bmatrix}
+	1-2x-y & -x \\
+	-\frac{1}{2}y & \frac{3}{4}-2y-\frac{1}{2}x
+\end{bmatrix}$$
+
+At $(0,0)$, the jacobian is 
+$$\begin{bmatrix}
+	1 & 0\\
+	0 & \frac{3}{4} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda=\frac{3}{4}, 1$. Since both eigenvalues are real and positive, this point is a nodal source and is unstable. 
+
+At $(0,\frac{3}{4})$, the jacobian is 
+$$\begin{bmatrix}
+	\frac{1}{4} & 0\\
+	-\frac{3}{8} & -\frac{3}{4} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda=-\frac{3}{4}, \frac{1}{4}$. Here both eigenvalues are real with opposite signs. Therefore, this point is a saddle point which is unstable. 
+
+At $(1,0)$, the jacobian is 
+$$\begin{bmatrix}
+	-1 & -1\\
+	0 & \frac{1}{4} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda=-1, \frac{1}{4}$. Again, both eigenvalues are real with opposite signs, so this point is a saddle point which is unstable.
+
+At $(\frac{1}{2},\frac{1}{2})$, the jacobian is 
+$$\begin{bmatrix}
+	-\frac{1}{2} & -\frac{1}{2} \\
+	-\frac{1}{4} & -\frac{1}{2} 
+\end{bmatrix}$$
+which has eigenvalues $\lambda = -\frac{1}{2}\pm \frac{1}{2\sqrt{2}}$. Since both eigenvalues are real and negative, this point is a nodal sink and is stable. 
+
+\subsection{Numerical Results}
+
+Here, we chose to focus on solutions with initial conditions in
+the region $[0,\frac{1}{2}]\times [0,\frac{1}{2}]$ in order to highlight the effect of the nodal source at $(0,0)$ and the nodal sink at $(\frac{1}{2}, \frac{1}{2})$. As shown in Figure 4 below, initial conditions near $(0,0)$ move outwards. Populations move towards either saddle point at $(0, \frac{3}{4})$ or $(1,0)$. After a long time, all solutions tend toward the nodal sink at $(\frac{1}{2}, \frac{1}{2})$. Again, this matches our theoretical results. 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{rk4_1ppp}
+	\caption{Phase-Plane Portrait}
+\end{figure}
+
+
+\end{document}
