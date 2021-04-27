@@ -1,7 +1,7 @@
 """
 Final Project
 Names: Arvind Parthasarthy, Ethan Donecoff
-Date:
+Date: April 27, 2021
 NetID(s): ap427, edd24
 """
 
@@ -9,10 +9,11 @@ import matplotlib.pyplot as plt
 import random
 import numpy as np
 
+# Functions 0, 1, 2, and 3 represent the four competitive species systems
+# of non-linear ODEs
 """
 
-This competitive species system of ODEs shows a spiral 
-sink at (1,1)
+Function 0
 
 """
 def fx(x,y):
@@ -25,8 +26,7 @@ def fy(x,y):
 
 """
 
-This competitive species system of ODEs shows a nodal
-source at (0,0)
+Function 1
 
 """
 def fx1(x,y):
@@ -39,8 +39,7 @@ def fy1(x,y):
 
 """
 
-This competitive species system of ODEs shows a saddle 
-at (0,1) and a nodal sink at (3,0).
+Function 2
 
 """
 def fx2(x,y):
@@ -53,8 +52,7 @@ def fy2(x,y):
 
 """
 
-This competitive species system of ODes shows a spiral 
-source at (0,0).
+Function 3
 
 """
 def fx3(x,y):
@@ -64,31 +62,6 @@ def fx3(x,y):
 def fy3(x,y):
 	fy1 = 0.2*y-x
 	return fy1
-
-"""
-
-This performs forward Euler to roughly approximate x(t) and y(t)
-
-"""
-"""
-def pop(x0, y0, dt, time):
-	x = []
-	y = []
-
-	# Initial values
-	x.append(x0)
-	y.append(y0)
-
-	# Calculate populations at each timestep
-	for i in range(-time, time):
-		x.append(x[i+time] + (fx3(x[i+time],y[i+time])) * dt)
-		y.append(y[i+time] + (fy3(x[i+time],y[i+time])) * dt)
-
-	return(x,y)
-
-# p1, p2 = pop(-0.5, -0.5, 0.1, 10)
-# print(len(p1))
-"""
 
 """
 init_pops
@@ -115,34 +88,20 @@ def init_pops(numPoints, xRange, yRange):
 	return(init_pops)
 
 """
-
-Define two sets of initial populations to be used below for
-modeling the four different systems.
-
-"""
-
-# Initial populations in 5x5 square in first quadrant
-init_pops1 = init_pops(100,5,5)
-
-# Initial populations in 0.5x0.5 square in first quadrant
-init_pops2 = init_pops(100,0.5,0.5)
-
-
-"""
 find_eqpts
 
 This function finds the equilibrium points (location where fx = fy = 0)
-for a system of ODEs by checking all (x,y) in range [0,r], 
+for a system of ODEs by checking all (x,y) in range [0,r]x[0,r], 
 incrementing by 0.01.
 
 
 INPUTS:
 xfunc: function for x'
 yfunc: function for y'
-r: range of (x,y) values that will be checked
+r: range of non-negative (x,y) values that will be checked
 
 OUTPUTS:
-ep: list of equilibrium points
+ep: list of non-negative equilibrium points
 
 """
 ep = []
@@ -156,7 +115,8 @@ def find_eqpts(xfunc, yfunc, r):
    return ep
 
 
-# Vector function (np array) for growth rate of both populations
+# Vector function (np array) for growth rate of both populations. 
+# fxy corresponds to "Function 0", fxy1 correponds to "Function 1", etc.
 def fxy(x,y):
   	return np.array([[fx(x,y)], [fy(x,y)]])
 
@@ -210,12 +170,31 @@ main function
 """
 if __name__ == '__main__':
 
+	"""
+
+	Define two sets of initial populations to be used below for
+	modeling the four different systems.
+
+	"""
+
+	# Initial populations in 5x5 square in first quadrant
+	init_pops1 = init_pops(100,5,5)
+
+	# Initial populations in 0.5x0.5 square in first quadrant
+	init_pops2 = init_pops(100,1,1)
+
+
+	# Find equilibrium points for each system
+	print("First system equilibrium points: ")
 	find_eqpts(fx, fy, 5)
+	print("\nSecond system equilibrium points: ")
 	find_eqpts(fx1, fy1, 5)
+	print("\nThird system equilibrium points: ")
 	find_eqpts(fx2, fy2, 5)
+	print("\nFourth system equilibrium points: ")
 	find_eqpts(fx3, fy3, 5)
 
-	# fx, fy
+	# fx, fy Plots
 
 	# Phase-Plane Portrait
 	plt.figure()
@@ -247,7 +226,7 @@ if __name__ == '__main__':
 	plt.close("all")
 
 
-	# fx1, fy1
+	# fx1, fy1 Plots
 
 	# Phase-Plane Portrait
 	plt.figure()
@@ -269,8 +248,8 @@ if __name__ == '__main__':
 	t1, xn1 = rk4(fxy1, 1000, 5, 3, 0.01)
 	plt.figure()
 	fig, ax = plt.subplots()
-	ax.plot(t1, xn1[0], label = "Prey Population")
-	ax.plot(t1, xn1[1], label = "Predator Population")
+	ax.plot(t1, xn1[0], label = "Population 1")
+	ax.plot(t1, xn1[1], label = "Population 2")
 	ax.legend(loc = "upper right")
 	plt.title("Species Population over Time")
 	plt.xlabel("Time")
@@ -278,7 +257,7 @@ if __name__ == '__main__':
 	plt.savefig("rk4_1pop.png", bbox_inches = "tight")
 	plt.close("all")
 
-	# fx2, fy2 
+	# fx2, fy2 Plots
 
 	# Phase-Plane Portrait
 	plt.figure()
@@ -300,8 +279,8 @@ if __name__ == '__main__':
 	t2, xn2 = rk4(fxy2, 1000, 5, 3, 0.01)
 	plt.figure()
 	fig, ax = plt.subplots()
-	ax.plot(t2, xn2[0], label = "Prey Population")
-	ax.plot(t2, xn2[1], label = "Predator Population")
+	ax.plot(t2, xn2[0], label = "Population 1")
+	ax.plot(t2, xn2[1], label = "Population 2")
 	ax.legend(loc = "upper right")
 	plt.title("Species Population over Time")
 	plt.xlabel("Time")
@@ -309,7 +288,7 @@ if __name__ == '__main__':
 	plt.savefig("rk4_2pop.png", bbox_inches = "tight")
 	plt.close("all")
 
-	# fx3, fy3
+	# fx3, fy3 Plots
 
 	# Phase-Plane Portrait
 	plt.figure()
