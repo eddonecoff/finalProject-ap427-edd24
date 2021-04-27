@@ -78,12 +78,14 @@ init_pops: List of initial populations
 """
 def init_pops(numPoints, xRange, yRange):
 
-	init_pops= []
+	# Pre-allocate array with length numPoints
+	init_pops= [0 for i in range(numPoints)]
 
+	# Randomly generate numPoints initial populations in given range
 	for i in range(numPoints):
 		x = random.random()*xRange
 		y = random.random()*yRange
-		init_pops.append((x,y))
+		init_pops[i] = (x,y)
 
 	return(init_pops)
 
@@ -104,21 +106,25 @@ OUTPUTS:
 ep: list of non-negative equilibrium points
 
 """
-ep = []
-
 def find_eqpts(xfunc, yfunc, r):
-   for x in range(100*r):
-       for y in range(100*r):
-           if ((xfunc(0.01*x,0.01*y) == 0) and (yfunc(0.01*x,0.01*y) == 0)):
-               ep.append((0.01*x,0.01*y))
-               print('The system has an equilibrium point at (%s,%s)' % (0.01*x,0.01*y))
-   return ep
+
+	# Initialize empty set, since we don't know how many eq. pts. there are
+	ep = []
+
+	# Every time fx = fy = 0, append (x,y) to ep list
+	for x in range(100*r):
+		for y in range(100*r):
+		   if ((xfunc(0.01*x,0.01*y) == 0) and (yfunc(0.01*x,0.01*y) == 0)):
+			   ep.append((0.01*x,0.01*y))
+			   print('The system has an equilibrium point at (%s,%s)' \
+			    % (0.01*x,0.01*y))
+	return ep
 
 
 # Vector function (np array) for growth rate of both populations. 
 # fxy corresponds to "Function 0", fxy1 correponds to "Function 1", etc.
 def fxy(x,y):
-  	return np.array([[fx(x,y)], [fy(x,y)]])
+	return np.array([[fx(x,y)], [fy(x,y)]])
 
 def fxy1(x,y):
 	return np.array([[fx1(x,y)], [fy1(x,y)]])
@@ -147,23 +153,26 @@ xn: List of (x,y) population at each time
 """
 
 def rk4(func,N,a,b,dt):
-   x0 = np.array([[a],[b]])
-   xn = np.zeros((2,N+1))
-   xn[:,0,None] = x0
-   t = [dt*n for n in range(N+1)]
+	# Pre-allocate lists
+	x0 = np.array([[a],[b]])
+	xn = np.zeros((2,N+1))
+	xn[:,0,None] = x0
+	t = [dt*n for n in range(N+1)]
    
-   for n in range(N):
-      tn = t[n]
-      a = xn[0][n]
-      b = xn[1][n]
-      k1 = dt*func(a,b)
-      k2 = dt*func(a+(k1[0][0])/2, b+(k1[1][0])/2)
-      k3 = dt*func(a+(k2[0][0])/2, b+(k2[1][0])/2)
-      k4 = dt*func(a+(k3[0][0]), b+(k3[1][0]))
+	# RK4 algorithm
+	for n in range(N):
+		tn = t[n]
+		a = xn[0][n]
+		b = xn[1][n]
+		k1 = dt*func(a,b)
+		k2 = dt*func(a+(k1[0][0])/2, b+(k1[1][0])/2)
+		k3 = dt*func(a+(k2[0][0])/2, b+(k2[1][0])/2)
+		k4 = dt*func(a+(k3[0][0]), b+(k3[1][0]))
 
-      xn[:,n+1,None] = xn[:,n,None] + 1/6*k1 + 1/3*k2 + 1/3*k3 + 1/6*k4
-         
-   return t, xn
+		xn[:,n+1,None] = xn[:,n,None] + 1/6*k1 + 1/3*k2 + 1/3*k3 + 1/6*k4
+		 
+	# return lists of time and simulated populations
+	return t, xn
 
 """
 main function
@@ -193,6 +202,13 @@ if __name__ == '__main__':
 	find_eqpts(fx2, fy2, 5)
 	print("\nFourth system equilibrium points: ")
 	find_eqpts(fx3, fy3, 5)
+
+	"""
+
+	Below are the plots of population vs. time and the phase-plane portrait
+	for each system.
+
+	"""
 
 	# fx, fy Plots
 
